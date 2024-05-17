@@ -12,7 +12,7 @@ export const authOptions = {
       async signIn({ user, account }: {
         user: {
           email: string;
-          name: string
+          name: string;
         },
         account: {
           provider: "google" | "github"

@@ -6,30 +6,34 @@ import { P2PTransactions } from "../../../components/P2PTransactions";
 
 async function getP2PTransactions() {
   const session = await getServerSession(authOptions);
+  const userId = Number(session?.user?.id);
+
+  if (!userId) {
+    return [];
+  }
+
   const txns = await prisma.p2pTransfer.findMany({
     where: {
       OR: [
         {
-          fromUserId: Number(session?.user?.id)
+          fromUserId: userId
         },
         {
-          toUserId: Number(session?.user?.id)
+          toUserId: userId
         }
       ]
     }
   });
 
   return txns.map(t => {
-    if (t.fromUserId == session?.user?.id) {
-      return (
-        {
+    if (t.fromUserId == userId) {
+      return{
           time: new Date(t.timestamp),
           amount: t.amount,
           type: "DEBIT",
           userId: t.toUserId,
-        }
-      )
-    } else if (t.toUserId == session?.user?.id) {
+        };
+    } else if (t.toUserId == userId) {
       return (
         {
           time: new Date(t.timestamp),
@@ -39,9 +43,9 @@ async function getP2PTransactions() {
         }
       )
     }else{
-        return undefined;
+        return null;
     }
-  })
+  }).filter((transaction): transaction is { time: Date; amount: number; type: string; userId: number } => transaction !== null);
 }
 
 
@@ -59,7 +63,7 @@ export default async function () {
       </div>
 
       <div className="pt-4">
-        <P2PTransactions transactions={transactions} />
+        <P2PTransactions transactions={transactions ?? []} />
       </div>
 
     </div>

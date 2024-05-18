@@ -2,6 +2,8 @@ import express from "express";
 import db from "@repo/db/client";
 const app = express();
 
+app.use(express.json());
+
 interface PaymentType {
     token : string;
     userId: string;
@@ -12,14 +14,14 @@ app.get('/hdfcWebhook',async (req,res)=>{
     //TODO: check if the request actually came from hdfc bank, [going to use webhook secret]
     const paymentInformation: PaymentType = {
         token: req.body.token,
-        userId: req.body.userId,
+        userId: req.body.user_identifier,
         amount: req.body.amount
     };
 
 
     try{
         await db.$transaction([
-            db.balance.update({
+            db.balance.updateMany({
             where: {
                 userId: Number(paymentInformation.userId)
             },
@@ -29,7 +31,7 @@ app.get('/hdfcWebhook',async (req,res)=>{
                 }
             }
             }),
-            db.onRampTransaction.update({
+            db.onRampTransaction.updateMany({
                 where: {
                     token: paymentInformation.token
                 },

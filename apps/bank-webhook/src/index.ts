@@ -18,6 +18,25 @@ app.get('/hdfcWebhook',async (req,res)=>{
         amount: req.body.amount
     };
 
+    const getRecord = await db.onRampTransaction.findUnique({
+        where: {
+            token: paymentInformation.token,
+        },
+    })
+
+    if (getRecord?.status == "Success") {
+        return res.status(409).json({
+            message: "Transaction already processed"
+        })
+    }
+
+    if (getRecord?.amount != Number(paymentInformation.amount)) {
+        return res.status(203).json({
+            message: "Requested amount mismatch"
+        })
+    }
+
+
 
     try{
         await db.$transaction([

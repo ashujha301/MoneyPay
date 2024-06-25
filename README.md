@@ -55,3 +55,8 @@ Navigate to the `app/user-app` directory and create a `.env` file with the neces
 ```bash
 npm run dev
 ```
+
+## Architecture in mind:
+
+![Screenshot 2024-06-25 203339](https://github.com/rahul-MyGit/MoneyPay/assets/153066667/09883b4f-56a4-4fef-be79-a636f06eeffd)
+
